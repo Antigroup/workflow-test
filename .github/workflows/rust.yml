@@ -22,10 +22,29 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Setup Rust
-      uses: ./.github/actions/setup-rust
+    - id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      shell: bash
+
+    - uses: actions/cache@v2
       with:
-        rust-version: ${{ matrix.rust }}
+        path: ~/.rustup/toolchains
+        key: rustup-${{ inputs.rust-version }}-${{ runner.os }}-${ steps.date.outputs.date }
+    - run: rustup install ${{ inputs.rust-version }}
+      shell: bash
+    - run: rustup default ${{ inputs.rust-version }}
+      shell: bash
+
+    - run: cargo generate-lockfile --verbose
+      shell: bash
+    - name: Restore cargo cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: cargo-${{ inputs.rust-version }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Build
       run: cargo build --verbose
