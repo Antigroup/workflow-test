@@ -21,12 +21,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Restore rustup Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.rustup/toolchains
+        key: rustup-${{ matrix.rust }}-${{ runner.os }}
     - name: Install Toolchain
       run: rustup install ${{ matrix.rust }}
     - name: Set Default Toolchain
       run: rustup default ${{ matrix.rust }}
 
-    - name: Restore Cache
+    - name: Restore Cargo Cache
       uses: actions/cache@v2
       with:
         path: |
