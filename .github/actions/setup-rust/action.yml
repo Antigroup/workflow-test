@@ -9,22 +9,21 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - name: Get current date
-    id: date
+  - id: date
     run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    shell: bash
 
-  - name: Restore rustup cache
-    uses: actions/cache@v2
+  - uses: actions/cache@v2
     with:
       path: ~/.rustup/toolchains
       key: rustup-${{ inputs.rust-version }}-${{ runner.os }}-${ steps.date.outputs.date }
-  - name: Install toolchain
-    run: rustup install ${{ inputs.rust-version }}
-  - name: Set default doolchain
-    run: rustup default ${{ inputs.rust-version }}
+  - run: rustup install ${{ inputs.rust-version }}
+    shell: bash
+  - run: rustup default ${{ inputs.rust-version }}
+    shell: bash
 
-  - name: Generate lockfile
-    run: cargo generate-lockfile --verbose
+  - run: cargo generate-lockfile --verbose
+    shell: bash
   - name: Restore cargo cache
     uses: actions/cache@v2
     with:
