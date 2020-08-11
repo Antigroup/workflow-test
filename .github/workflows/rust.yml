@@ -19,11 +19,20 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Install Toolchain
       run: rustup install ${{ matrix.rust }}
     - name: Set Default Toolchain
       run: rustup default ${{ matrix.rust }}
+    - name: Restore Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Build
       run: cargo build --verbose
