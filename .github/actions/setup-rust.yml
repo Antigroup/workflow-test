@@ -1,0 +1,35 @@
+name: 'Setup Rust'
+description: 'Install a Rust toolchain and use dependency caching.'
+inputs:
+  rust-version:
+    description: 'Version of Rust to use (stable, beta, nightly, 1.43, etc.)'
+    required: true
+    default: 'stable'
+
+runs:
+  using: "composite"
+  steps:
+  - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+  - name: Restore rustup cache
+    uses: actions/cache@v2
+    with:
+      path: ~/.rustup/toolchains
+      key: rustup-${{ inputs.rust-version }}-${{ runner.os }}-${ steps.date.outputs.date }
+  - name: Install toolchain
+    run: rustup install ${{ inputs.rust-version }}
+  - name: Set default doolchain
+    run: rustup default ${{ inputs.rust-version }}
+
+  - name: Generate lockfile
+    run: cargo generate-lockfile --verbose
+  - name: Restore cargo cache
+    uses: actions/cache@v2
+    with:
+      path: |
+        ~/.cargo/registry
+        ~/.cargo/git
+        target
+      key: cargo-${{ inputs.rust-version }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}

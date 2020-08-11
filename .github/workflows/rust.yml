@@ -22,24 +22,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Restore rustup Cache
-      uses: actions/cache@v2
+    - name: Setup Rust
+      uses: .github/actions/setup-rust.yml
       with:
-        path: ~/.rustup/toolchains
-        key: rustup-${{ matrix.rust }}-${{ runner.os }}
-    - name: Install Toolchain
-      run: rustup install ${{ matrix.rust }}
-    - name: Set Default Toolchain
-      run: rustup default ${{ matrix.rust }}
-
-    - name: Restore Cargo Cache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: cargo-${{ matrix.rust }}-${{ runner.os }}
+        rust-version: ${{ matrix.rust }}
 
     - name: Build
       run: cargo build --verbose
