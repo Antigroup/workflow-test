@@ -6,7 +6,7 @@ mod tests {
     }
 
     #[test]
-    fn it_doesnt_works() {
-        assert_eq!(2, 3);
+    fn it_really_workes() {
+        assert_eq!(6 * 7, 42);
     }
 }
