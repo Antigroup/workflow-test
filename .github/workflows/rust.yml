@@ -29,10 +29,10 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ~/.rustup/toolchains
-        key: rustup-${{ inputs.rust-version }}-${{ runner.os }}-${ steps.date.outputs.date }
-    - run: rustup install ${{ inputs.rust-version }}
+        key: rustup-${{ matrix.rust }}-${{ runner.os }}-${ steps.date.outputs.date }
+    - run: rustup install ${{ matrix.rust }}
       shell: bash
-    - run: rustup default ${{ inputs.rust-version }}
+    - run: rustup default ${{ matrix.rust }}
       shell: bash
 
     - run: cargo generate-lockfile --verbose
@@ -44,7 +44,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: cargo-${{ inputs.rust-version }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        key: cargo-${{ matrix.rust }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Build
       run: cargo build --verbose
