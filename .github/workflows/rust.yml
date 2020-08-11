@@ -8,17 +8,23 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  PASSWORD: ${{ secrets.PASSWORD }}
 
 jobs:
-  build:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        rust: [stable, beta, nightly]
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
-    - name: Show Password
-      run: echo $PASSWORD
+    - name: Install Toolchain
+      run: rustup install ${{ matrix.rust }}
+    - name: Set Default Toolchain
+      run: rustup default ${{ matrix.rust }}
+
     - name: Build
       run: cargo build --verbose
     - name: Run tests
