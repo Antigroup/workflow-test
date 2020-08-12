@@ -1,10 +1,7 @@
-name: Rust Tests
+name: Validate Pull Request
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -22,22 +19,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-      shell: bash
+    - name: Install Rust toolchain
+      run: |
+        rustup install ${{ matrix.rust }}
+        rustup default ${{ matrix.rust }}
 
-    - uses: actions/cache@v2
-      with:
-        path: ~/.rustup/toolchains
-        key: rustup-${{ matrix.rust }}-${{ runner.os }}-${ steps.date.outputs.date }
-    - run: rustup install ${{ matrix.rust }}
-      shell: bash
-    - run: rustup default ${{ matrix.rust }}
-      shell: bash
-
-    - run: cargo generate-lockfile --verbose
-      shell: bash
-    - name: Restore cargo cache
+    - name: Generate Cargo lockfile
+      run: cargo generate-lockfile --verbose
+    - name: Restore Cargo cache
       uses: actions/cache@v2
       with:
         path: |
@@ -48,5 +37,17 @@ jobs:
 
     - name: Build
       run: cargo build --verbose
+    - name: Clippy
+      run: cargo clippy --verbose
     - name: Run tests
       run: cargo test --verbose
+
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Check format
+      run: cargo fmt --verbose -- --check --verbose
