@@ -3,11 +3,7 @@ pub fn foo() -> i32 {
 }
 
 pub fn bar(numbers: &[u32]) -> u32 {
-    let mut res: u32 = 0;
-    for i in 0..numbers.len() {
-        res += numbers[i];
-    }
-    res
+    numbers.iter().sum()
 }
 
 #[cfg(test)]
