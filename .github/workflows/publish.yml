@@ -1,6 +1,11 @@
 name: Publish Crate
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag for the associated GitHub release.'
+        required: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -18,3 +23,13 @@ jobs:
       run: cargo test --verbose
     - name: Publish
       run: cargo publish --verbose --dry-run
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ inputs.release_tag }}
+        release_name: Release ${{ inputs.release_tag}}
+        draft: false
+        prerelease: false
