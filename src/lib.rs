@@ -2,6 +2,14 @@ pub fn foo() -> i32 {
     42
 }
 
+pub fn bar(numbers: &[u32]) -> u32 {
+    let mut res: u32 = 0;
+    for i in 0..numbers.len() {
+        res += numbers[i];
+    }
+    res
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

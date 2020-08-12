@@ -36,11 +36,11 @@ jobs:
           target
         key: cargo-${{ matrix.rust }}-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
+    - name: Clippy
+      run: cargo clippy --all-targets --all-features -- -D clippy::all
     - name: Build
       run: cargo build --verbose
-    - name: Clippy
-      run: cargo clippy --verbose
-    - name: Run tests
+    - name: Tests
       run: cargo test --verbose
 
   format:
